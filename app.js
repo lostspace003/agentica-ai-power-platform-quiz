@@ -308,14 +308,14 @@ const CURRENT_USER_KEY = "pplatform_quiz_current";
 //
 // Without Firebase, data is stored in localStorage only (per-browser).
 const FIREBASE_CONFIG = {
-  // Uncomment and fill in your Firebase project values:
-  // apiKey: "AIza...",
-  // authDomain: "your-project.firebaseapp.com",
-  // databaseURL: "https://your-project-default-rtdb.firebaseio.com",
-  // projectId: "your-project",
-  // storageBucket: "your-project.appspot.com",
-  // messagingSenderId: "123456789",
-  // appId: "1:123456789:web:abcdef"
+  apiKey: "AIzaSyA2YowETDtWNU3VCcJSAMmtOfLz-WzlP94",
+  authDomain: "trialproject-d774a.firebaseapp.com",
+  databaseURL: "https://trialproject-d774a-default-rtdb.firebaseio.com",
+  projectId: "trialproject-d774a",
+  storageBucket: "trialproject-d774a.firebasestorage.app",
+  messagingSenderId: "150818616590",
+  appId: "1:150818616590:web:c77d06d5875615c042d35f",
+  measurementId: "G-XM4C1L116J"
 };
 
 let firebaseDB = null;
