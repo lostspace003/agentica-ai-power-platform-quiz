@@ -293,6 +293,59 @@ const STORAGE_KEY = "pplatform_quiz_users";
 const CURRENT_USER_KEY = "pplatform_quiz_current";
 
 // ========================================
+// Firebase Configuration
+// ========================================
+// To enable shared data storage (so admin can see ALL participants' results
+// from any browser), create a free Firebase project and fill in your config.
+//
+// Setup steps:
+//   1. Go to https://console.firebase.google.com
+//   2. Create a new project (free Spark plan is fine)
+//   3. Go to Project Settings > General > Your apps > click "Web" icon
+//   4. Register an app, then copy the firebaseConfig object below
+//   5. Go to Build > Realtime Database > Create Database > choose "Start in test mode"
+//   6. Deploy your site — results are now shared across all browsers!
+//
+// Without Firebase, data is stored in localStorage only (per-browser).
+const FIREBASE_CONFIG = {
+  // Uncomment and fill in your Firebase project values:
+  // apiKey: "AIza...",
+  // authDomain: "your-project.firebaseapp.com",
+  // databaseURL: "https://your-project-default-rtdb.firebaseio.com",
+  // projectId: "your-project",
+  // storageBucket: "your-project.appspot.com",
+  // messagingSenderId: "123456789",
+  // appId: "1:123456789:web:abcdef"
+};
+
+let firebaseDB = null;
+let firebaseEnabled = false;
+
+function initFirebase() {
+  if (FIREBASE_CONFIG.apiKey) {
+    try {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      firebaseDB = firebase.database();
+      firebaseEnabled = true;
+      console.log('[Quiz] Firebase connected — results will be shared across all browsers.');
+    } catch (e) {
+      console.warn('[Quiz] Firebase init failed, falling back to localStorage:', e);
+    }
+  } else {
+    console.info('[Quiz] Firebase not configured — using localStorage only. Admin will only see local results.');
+  }
+}
+
+// Firebase keys cannot contain . # $ [ ] /
+function emailToFirebaseKey(email) {
+  return email.replace(/\./g, ',').replace(/@/g, '__at__');
+}
+
+function firebaseKeyToEmail(key) {
+  return key.replace(/,/g, '.').replace(/__at__/g, '@');
+}
+
+// ========================================
 // State
 // ========================================
 let currentUser = null;
@@ -314,7 +367,7 @@ function showView(viewId) {
 }
 
 // ========================================
-// Storage
+// Storage (localStorage + Firebase sync)
 // ========================================
 function getUsers() {
   try {
@@ -335,6 +388,54 @@ function saveUserData(email, data) {
   const users = getUsers();
   users[email] = data;
   saveUsers(users);
+
+  // Also persist to Firebase so admin can see all participants
+  if (firebaseEnabled && firebaseDB) {
+    const key = emailToFirebaseKey(email);
+    firebaseDB.ref('users/' + key).set(data)
+      .catch(err => console.warn('[Quiz] Firebase save failed:', err));
+  }
+}
+
+// Fetch all users from Firebase (used by admin view)
+async function fetchAllUsersFromFirebase() {
+  if (!firebaseEnabled || !firebaseDB) return getUsers();
+  try {
+    const snapshot = await firebaseDB.ref('users').once('value');
+    const raw = snapshot.val() || {};
+    const users = {};
+    Object.keys(raw).forEach(key => {
+      const email = firebaseKeyToEmail(key);
+      users[email] = raw[key];
+    });
+    // Cache in localStorage so CSV export and other sync reads work
+    saveUsers(users);
+    return users;
+  } catch (err) {
+    console.warn('[Quiz] Firebase fetch failed, using localStorage:', err);
+    return getUsers();
+  }
+}
+
+// Fetch a single user from Firebase (used at login to restore progress)
+async function fetchUserFromFirebase(email) {
+  if (!firebaseEnabled || !firebaseDB) return getUserData(email);
+  try {
+    const key = emailToFirebaseKey(email);
+    const snapshot = await firebaseDB.ref('users/' + key).once('value');
+    const data = snapshot.val();
+    if (data) {
+      // Update localStorage cache
+      const users = getUsers();
+      users[email] = data;
+      saveUsers(users);
+      return data;
+    }
+    return getUserData(email);
+  } catch (err) {
+    console.warn('[Quiz] Firebase user fetch failed, using localStorage:', err);
+    return getUserData(email);
+  }
 }
 
 // ========================================
@@ -372,7 +473,7 @@ function initLogin() {
     }
   });
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = $('#login-name').value.trim();
     const email = $('#login-email').value.trim().toLowerCase();
@@ -404,8 +505,13 @@ function initLogin() {
       return;
     }
 
-    // Get or create user
-    let userData = getUserData(email);
+    // Disable form while loading
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Loading...';
+
+    // Try to fetch existing progress from Firebase (restores progress across browsers)
+    let userData = await fetchUserFromFirebase(email);
+
     if (!userData) {
       userData = {
         fullName: name,
@@ -419,6 +525,9 @@ function initLogin() {
       userData.fullName = name;
       saveUserData(email, userData);
     }
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = adminMode ? 'Admin Login' : 'Start Assessment';
 
     currentUser = userData;
     isAdmin = false;
@@ -1104,8 +1213,16 @@ function generateCertificate() {
 // ========================================
 // Admin Panel
 // ========================================
-function showAdminView() {
+async function showAdminView() {
   showView('admin-view');
+
+  // Show loading state while fetching from Firebase
+  if (firebaseEnabled) {
+    $('#admin-stats').innerHTML = '<div class="stat-card"><div class="stat-label">Loading results from database...</div></div>';
+    $('#admin-results-body').innerHTML = '<tr><td colspan="8" class="empty-state"><p>Loading...</p></td></tr>';
+    await fetchAllUsersFromFirebase();
+  }
+
   renderAdminOverview();
   renderAdminTabs();
 }
@@ -1384,6 +1501,7 @@ function arraysEqual(a, b) {
 // Event Bindings
 // ========================================
 function init() {
+  initFirebase();
   initLogin();
 
   // Logout
