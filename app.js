@@ -344,13 +344,25 @@ function initLogin() {
   const form = $('#login-form');
   const errorEl = $('#login-error');
   const adminToggle = $('#admin-toggle');
+  const submitBtn = form.querySelector('button[type="submit"]');
   let adminMode = false;
+
+  function resetAdminMode() {
+    adminMode = false;
+    adminToggle.textContent = 'Admin Login';
+    $('#login-name').parentElement.style.display = 'block';
+    submitBtn.textContent = 'Start Assessment';
+  }
+
+  // Expose so logout handlers can reset admin state
+  window._resetAdminMode = resetAdminMode;
 
   adminToggle.addEventListener('click', (e) => {
     e.preventDefault();
     adminMode = !adminMode;
     adminToggle.textContent = adminMode ? 'User Login' : 'Admin Login';
     $('#login-name').parentElement.style.display = adminMode ? 'none' : 'block';
+    submitBtn.textContent = adminMode ? 'Admin Login' : 'Start Assessment';
     if (adminMode) {
       $('#login-email').value = ADMIN_EMAIL;
     } else {
@@ -1377,6 +1389,7 @@ function init() {
     currentUser = null;
     isAdmin = false;
     $('#login-form').reset();
+    if (window._resetAdminMode) window._resetAdminMode();
     showView('login-view');
   });
 
@@ -1384,6 +1397,7 @@ function init() {
     currentUser = null;
     isAdmin = false;
     $('#login-form').reset();
+    if (window._resetAdminMode) window._resetAdminMode();
     showView('login-view');
   });
 
