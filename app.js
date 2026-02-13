@@ -1,5 +1,5 @@
 // ========================================
-// Quiz Data — 4 Modules, 5 Questions Each
+// Quiz Data — 12 Modules, 5 Questions Each
 // ========================================
 const QUIZ_DATA = [
   {
@@ -279,6 +279,569 @@ const QUIZ_DATA = [
         ],
         correct: 1,
         explanation: "Schema-driven reasoning means the agent calls describe_table to understand the table structure (columns, data types, option set values, relationships) before formulating a read_query. This two-step pattern (understand, then act) is fundamental to reliable agent-data interaction — it prevents the agent from guessing wrong column names, missing filter options, or returning incorrect results."
+      }
+    ]
+  },
+  {
+    id: 5,
+    title: "Module 05: Agent Builder",
+    description: "From App to Agent — Converting Canvas Apps",
+    questions: [
+      {
+        id: 1,
+        type: "single",
+        question: "What is Agent Builder in Power Platform?",
+        options: [
+          "A tool that builds canvas apps from Copilot Studio agents",
+          "A Power Apps feature that converts existing canvas apps into Copilot Studio agents",
+          "A code editor for writing custom agent logic",
+          "A deployment tool for publishing agents to Teams"
+        ],
+        correct: 1,
+        explanation: "Agent Builder is a GA Power Apps feature that analyses an existing canvas app's screens, controls, formulas, data connections, and business rules to extract goals, steps, knowledge, and triggers — then generates a fully functional Copilot Studio agent. It provides a 60-80% head start on agent creation."
+      },
+      {
+        id: 2,
+        type: "multi",
+        question: "Which are the four extraction categories that Agent Builder derives from a canvas app? (Select all that apply)",
+        options: [
+          "Goals",
+          "Steps",
+          "Knowledge",
+          "Connectors"
+        ],
+        correct: [0, 1, 2],
+        explanation: "Agent Builder extracts four categories from a canvas app: Goals (high-level objectives from screen structure), Steps (sequential actions from control layout and validation), Knowledge (reference materials from data connections and help text), and Triggers (when/how the agent activates). 'Connectors' is not one of the four extraction categories."
+      },
+      {
+        id: 3,
+        type: "order",
+        question: "Arrange the five stages of the Agent Builder workflow in the correct order:",
+        items: [
+          "Refine & Publish",
+          "Select App",
+          "Configure Goal",
+          "Generate Agent",
+          "Review Extraction"
+        ],
+        correctOrder: [1, 2, 4, 3, 0],
+        explanation: "The Agent Builder workflow follows five stages: (1) Select App — choose a canvas app; (2) Configure Goal — define the agent's primary goal; (3) Review Extraction — review extracted steps, knowledge, and triggers; (4) Generate Agent — create the Copilot Studio agent; (5) Refine & Publish — test, refine topics, add MCP tools, publish."
+      },
+      {
+        id: 4,
+        type: "match",
+        question: "Match each Agent Builder aspect with its correct description:",
+        pairs: [
+          { left: "What Agent Builder Extracts", right: "Goals, steps, knowledge sources, and conversational triggers from app metadata" },
+          { left: "What Requires Manual Config", right: "MCP Server setup, scheduled triggers, complex event filters, and nested conditions" },
+          { left: "Canvas App Prerequisite", right: "Dataverse connections, meaningful control names, and distinct screen structure" }
+        ],
+        explanation: "Agent Builder automatically extracts goals, steps, knowledge, and triggers from app metadata. However, it does NOT auto-configure the Dataverse MCP Server, scheduled triggers, complex event filters, or nested conditions — these require manual configuration. Canvas apps need Dataverse connections, meaningful control names (not defaults like TextInput1), and distinct screen structure for best results."
+      },
+      {
+        id: 5,
+        type: "single",
+        question: "What critical component must be manually added after Agent Builder generates an agent?",
+        options: [
+          "System prompt text",
+          "Dataverse MCP Server as a tool in Copilot Studio",
+          "Agent name and description",
+          "Default conversational trigger"
+        ],
+        correct: 1,
+        explanation: "Agent Builder does NOT auto-configure the Dataverse MCP Server. You must manually add it as a tool in Copilot Studio after generation. This is the critical connection that enables real-time data access via list_tables, read_query, create_record, and update_record operations."
+      }
+    ]
+  },
+  {
+    id: 6,
+    title: "Module 06: Copilot Studio Agents Using Dataverse MCP",
+    description: "Building Production-Grade Conversational AI",
+    questions: [
+      {
+        id: 1,
+        type: "single",
+        question: "What are the five core components of a Copilot Studio agent?",
+        options: [
+          "Database, UI, API, Logic, Storage",
+          "System Prompt, Topics, Tools, Knowledge, Channels",
+          "Frontend, Backend, Middleware, Cache, Queue",
+          "Input, Process, Output, Feedback, Control"
+        ],
+        correct: 1,
+        explanation: "A Copilot Studio agent has five core components: System Prompt (defines identity, tone, capabilities, boundaries), Topics (conversation patterns with triggers and branching), Tools (MCP Server, Power Automate flows, HTTP endpoints), Knowledge (documents, websites, data sources), and Channels (Teams, web chat, custom canvas)."
+      },
+      {
+        id: 2,
+        type: "multi",
+        question: "Which of the following are characteristics of generative orchestration in Copilot Studio? (Select all that apply)",
+        options: [
+          "LLM classifies intent dynamically",
+          "Requires explicit topic for each intent",
+          "Can use tools (MCP) ad hoc",
+          "More flexible, fewer topics needed"
+        ],
+        correct: [0, 2, 3],
+        explanation: "Generative orchestration uses LLM-powered dynamic intent classification, can use tools ad hoc without explicit topics, and is more flexible requiring fewer predefined topics. In contrast, classic (rule-based) orchestration requires explicit topics for each intent. Generative mode is best for data agents and Q&A agents."
+      },
+      {
+        id: 3,
+        type: "order",
+        question: "Arrange the five steps of generative orchestration in the correct processing order:",
+        items: [
+          "Execute Plan (call MCP, retrieve knowledge, run topic)",
+          "Receive Message from user",
+          "Compose Response in natural language",
+          "Match Topic/Tool based on intent",
+          "Classify Intent using LLM"
+        ],
+        correctOrder: [1, 4, 3, 0, 2],
+        explanation: "Generative orchestration processes in five steps: (1) Receive Message — user sends a natural language message; (2) Classify Intent — LLM analyzes and determines user intent; (3) Match Topic/Tool — orchestration matches intent to topics, tools, or knowledge; (4) Execute Plan — agent calls MCP operations, retrieves knowledge, or runs topic; (5) Compose Response — LLM synthesizes results into natural language."
+      },
+      {
+        id: 4,
+        type: "match",
+        question: "Match each orchestration mode with its defining characteristic:",
+        pairs: [
+          { left: "Classic Mode", right: "Rule-based trigger matching requiring explicit topics for each intent" },
+          { left: "Generative Mode", right: "LLM classifies intent dynamically and handles queries without explicit topics" },
+          { left: "System Prompt", right: "The most important configuration element defining agent identity and behaviour" }
+        ],
+        explanation: "Classic mode uses rule-based triggers requiring explicit topics — more predictable but more development effort. Generative mode uses LLM-powered dynamic routing — more flexible and fewer topics needed. The system prompt is identified as the most important configuration element, defining identity, capabilities, boundaries, compliance rules, and tone."
+      },
+      {
+        id: 5,
+        type: "single",
+        question: "When should you create a custom topic versus relying on generative orchestration?",
+        options: [
+          "Always create custom topics for everything",
+          "Never use custom topics — generative handles all",
+          "Custom topics for guided workflows; generative for ad hoc queries",
+          "Custom topics only for error handling"
+        ],
+        correct: 2,
+        explanation: "Custom topics should be created for guided, multi-step workflows where you need deterministic control (like claims submission with specific data collection steps). Generative orchestration handles ad hoc queries well (like 'Show me open claims'). The best agents use both: custom topics for structured processes and generative orchestration for flexible queries."
+      }
+    ]
+  },
+  {
+    id: 7,
+    title: "Module 07: Agent Flows & Deterministic Orchestration",
+    description: "Making Agents Proactive with Event & Schedule Triggers",
+    questions: [
+      {
+        id: 1,
+        type: "single",
+        question: "Which trigger type would you use to auto-triage new insurance claims as they are submitted?",
+        options: [
+          "Scheduled trigger — run daily at midnight",
+          "Event-driven trigger — when Dataverse record created",
+          "Instant trigger — button in canvas app",
+          "HTTP trigger — external API call"
+        ],
+        correct: 1,
+        explanation: "An event-driven trigger that fires when a Dataverse record is created is the correct choice for auto-triaging new claims. This ensures immediate processing as each claim is submitted, rather than waiting for a scheduled batch run. Events can be filtered by condition — e.g., only trigger when claim_amount > 500000."
+      },
+      {
+        id: 2,
+        type: "multi",
+        question: "Which of the following are the three types of Agent Flow triggers? (Select all that apply)",
+        options: [
+          "Event-driven",
+          "Scheduled",
+          "Instant (Manual)",
+          "HTTP webhook"
+        ],
+        correct: [0, 1, 2],
+        explanation: "Agent Flows support three trigger types: Event-driven (responds to Dataverse record create/update/delete), Scheduled (runs on recurrence patterns like daily at 8 AM or every 15 minutes), and Instant/Manual (triggered on-demand by users via buttons or from other flows). HTTP webhook is not one of the three Agent Flow trigger types."
+      },
+      {
+        id: 3,
+        type: "order",
+        question: "Arrange the escalation and timeout policy stages in the correct order based on SLA elapsed time:",
+        items: [
+          "Auto-Action (auto-reject with timeout reason)",
+          "Reminder to original approver",
+          "Reassignment to backup approver",
+          "Escalation — add manager as additional approver"
+        ],
+        correctOrder: [1, 3, 2, 0],
+        explanation: "The escalation policy follows SLA elapsed time: at 50% SLA — send Reminder to original approver; at 75% SLA — Escalation by adding manager as additional approver; at 100% SLA — Reassignment to backup approver; after escalation timeout — Auto-Action with auto-reject and 'Approval Timeout' reason."
+      },
+      {
+        id: 4,
+        type: "match",
+        question: "Match each scenario with the correct flow type:",
+        pairs: [
+          { left: "AI reasoning needed for decisions", right: "Agent Flow" },
+          { left: "High-volume batch operations with fixed logic", right: "Cloud Flow" },
+          { left: "Same input always produces same output", right: "Deterministic Orchestration" }
+        ],
+        explanation: "Agent Flows are best when AI reasoning is needed for dynamic decision-making. Cloud Flows are best for high-volume batch operations with fixed branching logic. Deterministic orchestration ensures the same input always produces the same output — using explicit rules and branching rather than AI interpretation, making it predictable and auditable."
+      },
+      {
+        id: 5,
+        type: "single",
+        question: "What is the main benefit of deterministic orchestration?",
+        options: [
+          "It uses more AI reasoning",
+          "Same input always produces same output — predictable and auditable",
+          "It runs faster than generative orchestration",
+          "It requires no configuration"
+        ],
+        correct: 1,
+        explanation: "Deterministic orchestration uses explicit rules and branching rather than AI interpretation. The key benefit is predictability — the flow follows the same path every time given the same inputs, making it auditable and reliable. This is essential for compliance-heavy BFSI scenarios where every decision path must be traceable."
+      }
+    ]
+  },
+  {
+    id: 8,
+    title: "Module 08: Workflow Designer & Human-in-the-Loop",
+    description: "Enterprise-Grade Approval Workflows for BFSI",
+    questions: [
+      {
+        id: 1,
+        type: "single",
+        question: "What are the three critical functions that human-in-the-loop serves in agentic AI systems?",
+        options: [
+          "Speed, Accuracy, Cost Reduction",
+          "Decision Authority, Quality Assurance, Accountability",
+          "Automation, Integration, Notification",
+          "Compliance, Reporting, Analytics"
+        ],
+        correct: 1,
+        explanation: "Human-in-the-loop serves three critical functions: Decision Authority (certain decisions must be made by an authorised human — AI recommends, human decides), Quality Assurance (human reviews AI-generated outputs before they impact customers), and Accountability (every material decision must have an identifiable human owner for audit purposes)."
+      },
+      {
+        id: 2,
+        type: "multi",
+        question: "Which of the following are Power Automate approval types? (Select all that apply)",
+        options: [
+          "Approve/Reject",
+          "First to Respond",
+          "Everyone Must Approve",
+          "Custom Responses"
+        ],
+        correct: [0, 1, 2, 3],
+        explanation: "Power Automate supports all four approval types: Approve/Reject (single approver), First to Respond (multiple approvers, first response wins), Everyone Must Approve (all must approve for success), and Custom Responses (3+ custom choices like Clear/Confirm Fraud/Escalate/Hold). Custom Responses are particularly powerful for BFSI where standard Approve/Reject is often too limited."
+      },
+      {
+        id: 3,
+        type: "order",
+        question: "Arrange the HITL spectrum levels from lowest risk to highest risk:",
+        items: [
+          "Mandatory Multi-Approver (claims >₹25L)",
+          "Full Automation (low risk, post-facto audit)",
+          "Human Decides, AI Assists (high-value claims >₹10L)",
+          "AI Recommends, Human Approves (standard claims)"
+        ],
+        correctOrder: [1, 3, 2, 0],
+        explanation: "The HITL spectrum from low to high risk: (1) Full Automation — AI decides and acts autonomously with post-facto audit only; (2) AI Recommends, Human Approves — AI triages and recommends, human reviews; (3) Human Decides, AI Assists — AI gathers data, human has full decision authority; (4) Mandatory Multi-Approver — multiple humans approve in sequence for critical decisions."
+      },
+      {
+        id: 4,
+        type: "match",
+        question: "Match each HITL implementation approach with its use case:",
+        pairs: [
+          { left: "Power Automate Approvals", right: "Formal approvals with compliance requirements and multi-level routing" },
+          { left: "Agent Flow Request for Info", right: "Lightweight mid-flow clarifications and simple confirmations" },
+          { left: "Adaptive Cards in Topics", right: "Real-time choices and immediate user decisions in conversation" }
+        ],
+        explanation: "Power Platform offers three HITL approaches: Power Automate Approvals for enterprise-grade formal approvals with SLA enforcement and audit trails; Agent Flow Request for Info for lightweight, in-agent pauses to request human input; and Adaptive Cards in Topics for real-time conversational UI with immediate responses. Production BFSI systems typically use all three at different points."
+      },
+      {
+        id: 5,
+        type: "single",
+        question: "For a claim above ₹25 lakh, which approval pattern is most appropriate?",
+        options: [
+          "Approve/Reject with single approver",
+          "First to Respond for speed",
+          "Multi-level sequential (approval chain)",
+          "Full automation with post-facto audit"
+        ],
+        correct: 2,
+        explanation: "For high-value claims above ₹25 lakh, multi-level sequential approval (approval chain) is most appropriate. This routes through a hierarchy: Adjuster → Claims Manager → Head of Claims. Each level must approve before the next receives the request. This ensures proper oversight and accountability required by BFSI regulations."
+      }
+    ]
+  },
+  {
+    id: 9,
+    title: "Module 09: Multi-Agent Systems with Shared MCP Memory",
+    description: "Coordinating Specialised Agents via Dataverse MCP",
+    questions: [
+      {
+        id: 1,
+        type: "single",
+        question: "What are the three roles Dataverse plays in multi-agent systems?",
+        options: [
+          "Authentication, Authorization, Auditing",
+          "Business Data Store, Coordination State, Audit Trail",
+          "Topics, Tools, Knowledge Sources",
+          "Create, Read, Update, Delete"
+        ],
+        correct: 1,
+        explanation: "In multi-agent systems, Dataverse serves three roles: Business Data Store (source of truth for domain data like Customers, Policies, Claims), Coordination State (shared memory via AgentTaskLog for tracking delegations and intermediate results between agents), and Audit Trail (compliance-grade logging of every action with timestamps and agent identity)."
+      },
+      {
+        id: 2,
+        type: "multi",
+        question: "Which are key specialist agent design principles? (Select all that apply)",
+        options: [
+          "Single Domain — handle exactly one business domain",
+          "Maximum MCP access to all tables",
+          "Clear I/O Contract for reliable integration",
+          "Independent Testing before adding to orchestrator"
+        ],
+        correct: [0, 2, 3],
+        explanation: "Key specialist agent design principles include: Single Domain (each specialist handles exactly one domain), Clear I/O Contract (well-defined input parameters and output format), and Independent Testing (testable in isolation). Maximum MCP access is the opposite of the correct principle — specialists should follow least-privilege with Scoped Tools, limiting MCP access to domain-relevant tables only."
+      },
+      {
+        id: 3,
+        type: "order",
+        question: "Arrange the agent-as-tool pattern steps in the correct order for a cross-domain query:",
+        items: [
+          "Orchestrator synthesizes combined results for user",
+          "User sends message to Orchestrator",
+          "Orchestrator invokes second specialist agent",
+          "First specialist executes and returns results",
+          "Orchestrator analyses and determines which specialists are needed"
+        ],
+        correctOrder: [1, 4, 3, 2, 0],
+        explanation: "The agent-as-tool pattern for a cross-domain query follows: (1) User sends message to Orchestrator; (2) Orchestrator analyses and determines which specialists are needed; (3) First specialist executes and returns results; (4) Orchestrator invokes second specialist with context from first; (5) Orchestrator synthesizes combined results and responds to user."
+      },
+      {
+        id: 4,
+        type: "match",
+        question: "Match each multi-agent topology with its description:",
+        pairs: [
+          { left: "Hub-and-Spoke", right: "Central orchestrator delegates to specialists — clear governance, single user interface" },
+          { left: "Pipeline", right: "Agents pass work in sequence like an assembly line — good for sequential processing" },
+          { left: "Peer-to-Peer", right: "Agents communicate directly with each other — flexible but complex governance" }
+        ],
+        explanation: "Multi-agent topologies include: Hub-and-Spoke (orchestrator pattern — most practical for Copilot Studio with clear governance), Pipeline (sequential processing like document processing), and Peer-to-Peer (direct agent communication — flexible but hard to audit). Hub-and-Spoke is the recommended topology for BFSI operations."
+      },
+      {
+        id: 5,
+        type: "single",
+        question: "In the Hub-and-Spoke topology, how do specialist agents communicate with each other?",
+        options: [
+          "They send messages directly to each other",
+          "They use a shared message queue",
+          "They do NOT communicate directly — all coordination flows through the Orchestrator",
+          "They use peer-to-peer protocols"
+        ],
+        correct: 2,
+        explanation: "In the Hub-and-Spoke (Orchestrator) topology, specialist agents do NOT communicate directly with each other. All coordination flows through the central Orchestrator. The Orchestrator receives user requests, delegates to specialists as needed, collects their results, and synthesizes the final response. This ensures clear governance and a single user interface."
+      }
+    ]
+  },
+  {
+    id: 10,
+    title: "Module 10: Data Preprocessing with Claude Desktop + MCP Power BI",
+    description: "Power BI Semantic Model Development Using AI",
+    questions: [
+      {
+        id: 1,
+        type: "single",
+        question: "How does the Power BI MCP Server communicate with Power BI Desktop?",
+        options: [
+          "Through the Power BI REST API in the cloud",
+          "Via XMLA/TMSL to the local Analysis Services instance",
+          "Using direct file access to the .pbix file",
+          "Through the Dataverse Web API"
+        ],
+        correct: 1,
+        explanation: "The Power BI MCP Server communicates via XMLA/TMSL to the local Analysis Services instance that Power BI Desktop runs on a dynamic port. The MCP Server discovers this port automatically and connects. All processing happens locally — no data leaves the machine. Claude Desktop communicates with the MCP Server using the MCP protocol."
+      },
+      {
+        id: 2,
+        type: "multi",
+        question: "Which of the following are MCP operation categories available in the Power BI Modeling MCP Server? (Select all that apply)",
+        options: [
+          "Schema Discovery (list_tables, describe_table)",
+          "DAX Queries (run_dax_query, evaluate_measure)",
+          "Model Modification (create_measure, create_calculated_column)",
+          "Data Import (load_csv, import_excel)"
+        ],
+        correct: [0, 1, 2],
+        explanation: "The Power BI Modeling MCP Server provides Schema Discovery (list_tables, describe_table, get_model_info), DAX Queries (run_dax_query, evaluate_measure, analyze_query_performance), and Model Modification (create_measure, create_calculated_column, create_hierarchy). It does not include data import operations like load_csv or import_excel — data loading is handled by Power BI Desktop's native connectors."
+      },
+      {
+        id: 3,
+        type: "order",
+        question: "Arrange the Claude Desktop setup steps (Path A) in the correct order:",
+        items: [
+          "Start conversing with the model",
+          "Install Node.js v18+ and Power BI Desktop",
+          "Open .pbix file in Power BI Desktop",
+          "Install MCP Server via npm",
+          "Configure claude_desktop_config.json"
+        ],
+        correctOrder: [1, 3, 4, 2, 0],
+        explanation: "The Claude Desktop setup follows: (1) Install prerequisites — Node.js v18+, Power BI Desktop, Claude Desktop; (2) Install MCP Server — npm install -g @anthropic/mcp-powerbi; (3) Configure Claude Desktop — edit claude_desktop_config.json with MCP server path; (4) Open Power BI model — open .pbix file (must be running); (5) Start conversing — 'List all tables in my model'."
+      },
+      {
+        id: 4,
+        type: "match",
+        question: "Match each tool with its primary purpose:",
+        pairs: [
+          { left: "MCP Power BI + Claude", right: "Build and modify semantic models — create measures, relationships, and columns" },
+          { left: "Copilot in Power BI (Built-in)", right: "Consume and explore reports — generate visuals and answer data questions" },
+          { left: "Dataverse MCP Server", right: "CRUD operations on business data — create, read, update records" }
+        ],
+        explanation: "MCP Power BI + Claude is for building and modifying semantic models (development-time tool). Copilot in Power BI is the built-in feature for consuming and exploring reports (consumption-time tool). Dataverse MCP Server handles CRUD operations on business data. MCP Power BI and Copilot in Power BI are complementary — use MCP to build the model, then Copilot to consume the reports."
+      },
+      {
+        id: 5,
+        type: "single",
+        question: "Which setup path is recommended for production BFSI environments with audit requirements?",
+        options: [
+          "Path A: Claude Desktop (best for learning)",
+          "Path B: VS Code + GitHub Copilot (code-first workflow)",
+          "Path C: Remote MCP Server (enterprise controls)",
+          "None — AI tools should never be used in production"
+        ],
+        correct: 2,
+        explanation: "Path C: Remote MCP Server is recommended for production BFSI environments because it provides cloud-based access, team sharing, centralized access control, and integrates with enterprise identity management. Path A (Claude Desktop) is best for learning and individual use. Path B (VS Code) provides better audit trails than Claude Desktop but lacks enterprise-grade controls."
+      }
+    ]
+  },
+  {
+    id: 11,
+    title: "Module 11: Power BI as Agent Insight & Feedback Loop",
+    description: "Monitoring, Measuring & Optimising Agentic AI Systems",
+    questions: [
+      {
+        id: 1,
+        type: "single",
+        question: "What are the four steps of the agent insight feedback loop?",
+        options: [
+          "Design → Build → Test → Deploy",
+          "Agents Act → Dataverse Captures → Power BI Visualises → Humans Optimise",
+          "Collect → Store → Analyse → Report",
+          "Input → Process → Output → Archive"
+        ],
+        correct: 1,
+        explanation: "The agent insight feedback loop follows four steps: (1) Agents Act — process requests, make decisions, delegate tasks; (2) Dataverse Captures — every action is logged with timestamps and outcomes; (3) Power BI Visualises — patterns emerge showing success rates, bottlenecks, and trends; (4) Humans Optimise — adjust prompts, modify thresholds, rebalance delegation. This is a continuous cycle."
+      },
+      {
+        id: 2,
+        type: "multi",
+        question: "Which are the three pages in the recommended BFSI dashboard design? (Select all that apply)",
+        options: [
+          "Claims Operations",
+          "Agent Performance",
+          "Approval Compliance",
+          "Financial Summary"
+        ],
+        correct: [0, 1, 2],
+        explanation: "The three-page BFSI dashboard design covers: Claims Operations (business question: 'How much work is flowing through the system?'), Agent Performance (business question: 'How are the AI agents performing and where should we optimise?'), and Approval Compliance (business question: 'Is human oversight functioning correctly and are SLAs being met?'). Financial Summary is not one of the three recommended pages."
+      },
+      {
+        id: 3,
+        type: "order",
+        question: "Arrange the feedback loop steps in the correct sequence:",
+        items: [
+          "Humans Optimise — adjust prompts and thresholds",
+          "Agents Act — process requests and make decisions",
+          "Power BI Visualises — patterns emerge from data",
+          "Dataverse Captures — actions logged with timestamps"
+        ],
+        correctOrder: [1, 3, 2, 0],
+        explanation: "The feedback loop follows: (1) Agents Act — process requests, make decisions, delegate tasks, escalate; (2) Dataverse Captures — every action logged with timestamps, outcomes, durations; (3) Power BI Visualises — patterns emerge: success rates, bottlenecks, SLA breaches; (4) Humans Optimise — adjust prompts, modify thresholds, rebalance delegation, add knowledge."
+      },
+      {
+        id: 4,
+        type: "match",
+        question: "Match each dashboard insight with its recommended optimisation action:",
+        pairs: [
+          { left: "Low Task Success Rate", right: "Review system prompts, add knowledge sources, simplify task scope" },
+          { left: "SLA Breaches Increasing", right: "Adjust thresholds, add approvers, automate low-risk items" },
+          { left: "One Agent Overloaded", right: "Distribute workload, add agent instances, refine routing logic" }
+        ],
+        explanation: "Every dashboard insight should map to a specific optimisation action: Low Task Success Rate → review prompts and knowledge; SLA Breaches Increasing → adjust thresholds and add approvers; One Agent Overloaded → distribute workload and refine routing. This closes the feedback loop from insight to actionable improvement."
+      },
+      {
+        id: 5,
+        type: "single",
+        question: "When should you use DirectQuery instead of Import mode for Dataverse connections in Power BI?",
+        options: [
+          "When you need the fastest query performance",
+          "When you want to minimise .pbix file size",
+          "When you need real-time data for operational dashboards",
+          "When the TDS endpoint is disabled"
+        ],
+        correct: 2,
+        explanation: "DirectQuery should be used when you need real-time, always-current data for operational dashboards. It queries Dataverse live via the TDS endpoint. Import mode copies data into the Power BI model — faster queries but data can be stale. For BFSI: start with Import for learning, then switch to DirectQuery for production operational dashboards."
+      }
+    ]
+  },
+  {
+    id: 12,
+    title: "Module 12: Memory, Governance & Production Readiness",
+    description: "Taking Agentic AI from Lab to Production in BFSI",
+    questions: [
+      {
+        id: 1,
+        type: "single",
+        question: "What are the five pillars of production readiness for agentic AI in BFSI?",
+        options: [
+          "Design, Develop, Test, Deploy, Monitor",
+          "Security & Access Control, Auditing & Compliance, Governance & Monitoring, Environment & ALM Strategy, Cost & Capacity Planning",
+          "Authentication, Authorization, Encryption, Logging, Backup",
+          "Requirements, Architecture, Implementation, Validation, Maintenance"
+        ],
+        correct: 1,
+        explanation: "The five pillars of production readiness are: (1) Security & Access Control — who can access what data and operations; (2) Auditing & Compliance — complete trail of all changes and agent actions; (3) Governance & Monitoring — visibility, control, and alerting at scale; (4) Environment & ALM Strategy — Dev/Test/Prod with controlled promotion; (5) Cost & Capacity Planning — predictable costs and adequate capacity."
+      },
+      {
+        id: 2,
+        type: "multi",
+        question: "Which are the three levels of Dataverse auditing configuration? (Select all that apply)",
+        options: [
+          "Global Level — enable auditing for entire environment",
+          "Table Level — specify which tables to audit",
+          "Column Level — choose specific columns for detailed tracking",
+          "Row Level — audit individual record access"
+        ],
+        correct: [0, 1, 2],
+        explanation: "Dataverse auditing is configured at three levels: Global Level (enable auditing for the entire environment), Table Level (specify which tables to audit), and Column Level (choose specific columns for detailed tracking). Row-level security exists as a separate concept but is not one of the three auditing configuration levels."
+      },
+      {
+        id: 3,
+        type: "order",
+        question: "Arrange the three-environment ALM strategy in the correct promotion order:",
+        items: [
+          "Production Environment — managed solutions only, change approval required",
+          "Test Environment — managed solutions imported, UAT",
+          "Development Environment — unmanaged solutions, active development"
+        ],
+        correctOrder: [2, 1, 0],
+        explanation: "The three-environment strategy follows: (1) Development — unmanaged solutions with active development and frequent changes; (2) Test — managed solutions imported for integration testing and UAT; (3) Production — managed solutions only with change approval required and monitoring. The key principle is: code flows forward, never backward."
+      },
+      {
+        id: 4,
+        type: "match",
+        question: "Match each security layer with its description:",
+        pairs: [
+          { left: "Security Role Layer", right: "Dataverse native security controlling table, column, and row access for all access" },
+          { left: "MCP Boundary Layer", right: "Agent-specific restrictions at the tool connection level limiting what agents see via MCP" },
+          { left: "Principle of Least Privilege", right: "Each role has only the minimum access needed to perform its function" }
+        ],
+        explanation: "Defense in depth uses multiple security layers: Security Role Layer applies Dataverse native security at user/service principal level for all access. MCP Boundary Layer adds agent-specific restrictions at the tool connection level in Copilot Studio, further limiting what the agent can see. The Principle of Least Privilege ensures each role has only the minimum access needed."
+      },
+      {
+        id: 5,
+        type: "single",
+        question: "What is the Copilot Credits billing model based on?",
+        options: [
+          "Fixed monthly subscription per agent",
+          "Per-user licensing only",
+          "Credit consumption based on interaction complexity (simple, standard, complex)",
+          "Free with Microsoft 365 E5 licence"
+        ],
+        correct: 2,
+        explanation: "Copilot Credits use a consumption-based billing model where different interaction types cost different amounts: Simple Query (1 credit), Standard Processing (2 credits), Complex Reasoning (4 credits), External Integration (3 credits), and Generative Response (3 credits). Capacity planning requires estimating daily volumes, interactions per process, and average credits per interaction, plus a 30% buffer."
       }
     ]
   }
@@ -1070,8 +1633,10 @@ function showModuleResult(score, total) {
 // ========================================
 function generateCertificate() {
   const canvas = $('#cert-canvas');
+  canvas.width = 1200;
+  canvas.height = 900;
   const ctx = canvas.getContext('2d');
-  const W = 1200, H = 850;
+  const W = 1200, H = 900;
 
   // Background
   ctx.fillStyle = '#FFFFFF';
@@ -1152,8 +1717,9 @@ function generateCertificate() {
 
   // Modules subtitle
   ctx.fillStyle = '#616161';
-  ctx.font = '400 14px Inter, sans-serif';
-  ctx.fillText('Modules 01–04: New Power Platform Vibe | Plan Designer | Power Apps Vibe | MCP Dataverse', W / 2, 390);
+  ctx.font = '400 11px Inter, sans-serif';
+  ctx.fillText('Modules 01–12: Power Platform Vibe | Plan Designer | Power Apps | MCP Dataverse | Agent Builder | Copilot Studio', W / 2, 388);
+  ctx.fillText('Agent Flows | Workflow Designer & HITL | Multi-Agent Systems | Claude Desktop MCP | Power BI Insights | Governance', W / 2, 404);
 
   // Score
   let totalScore = 0, totalQuestions = 0;
@@ -1165,41 +1731,46 @@ function generateCertificate() {
 
   // Score box
   ctx.fillStyle = '#F5F6FA';
-  ctx.fillRect(W / 2 - 160, 420, 320, 90);
+  ctx.fillRect(W / 2 - 160, 430, 320, 90);
   ctx.strokeStyle = '#E0E0E0';
   ctx.lineWidth = 1;
-  ctx.strokeRect(W / 2 - 160, 420, 320, 90);
+  ctx.strokeRect(W / 2 - 160, 430, 320, 90);
 
   ctx.fillStyle = '#2E2E38';
   ctx.font = '700 36px Inter, sans-serif';
-  ctx.fillText(`${totalScore}/${totalQuestions}`, W / 2, 465);
+  ctx.fillText(`${totalScore}/${totalQuestions}`, W / 2, 475);
 
   ctx.fillStyle = '#616161';
   ctx.font = '400 14px Inter, sans-serif';
-  ctx.fillText(`Score: ${pct}%`, W / 2, 495);
+  ctx.fillText(`Score: ${pct}%`, W / 2, 505);
 
-  // Module breakdown
-  ctx.font = '400 12px Inter, sans-serif';
+  // Module breakdown (two rows for 12 modules)
+  ctx.font = '400 10px Inter, sans-serif';
   ctx.fillStyle = '#757575';
-  const modLine = QUIZ_DATA.map(m => {
+  const modLine1 = QUIZ_DATA.slice(0, 6).map(m => {
     const r = currentUser.modules[m.id];
     return `M${String(m.id).padStart(2, '0')}: ${r ? r.score : 0}/${m.questions.length}`;
-  }).join('    |    ');
-  ctx.fillText(modLine, W / 2, 540);
+  }).join('   |   ');
+  const modLine2 = QUIZ_DATA.slice(6).map(m => {
+    const r = currentUser.modules[m.id];
+    return `M${String(m.id).padStart(2, '0')}: ${r ? r.score : 0}/${m.questions.length}`;
+  }).join('   |   ');
+  ctx.fillText(modLine1, W / 2, 545);
+  ctx.fillText(modLine2, W / 2, 560);
 
   // Date
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   ctx.fillStyle = '#616161';
   ctx.font = '400 14px Inter, sans-serif';
-  ctx.fillText(`Date: ${dateStr}`, W / 2, 590);
+  ctx.fillText(`Date: ${dateStr}`, W / 2, 600);
 
   // Divider
   ctx.strokeStyle = '#E0E0E0';
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(100, 630);
-  ctx.lineTo(W - 100, 630);
+  ctx.moveTo(100, 650);
+  ctx.lineTo(W - 100, 650);
   ctx.stroke();
 
   // Signature lines
@@ -1208,24 +1779,24 @@ function generateCertificate() {
 
   // Left signature
   ctx.beginPath();
-  ctx.moveTo(200, 720);
-  ctx.lineTo(420, 720);
+  ctx.moveTo(200, 760);
+  ctx.lineTo(420, 760);
   ctx.stroke();
   ctx.fillStyle = '#757575';
   ctx.font = '400 12px Inter, sans-serif';
-  ctx.fillText('Course Administrator', 310, 745);
+  ctx.fillText('Course Administrator', 310, 785);
 
   // Right signature
   ctx.beginPath();
-  ctx.moveTo(W - 420, 720);
-  ctx.lineTo(W - 200, 720);
+  ctx.moveTo(W - 420, 760);
+  ctx.lineTo(W - 200, 760);
   ctx.stroke();
-  ctx.fillText('Assessment Platform', W - 310, 745);
+  ctx.fillText('Assessment Platform', W - 310, 785);
 
   // Footer
   ctx.fillStyle = '#BDBDBD';
   ctx.font = '400 10px Inter, sans-serif';
-  ctx.fillText(`Certificate ID: AIPP-${Date.now().toString(36).toUpperCase()} | ${currentUser.email}`, W / 2, 800);
+  ctx.fillText(`Certificate ID: AIPP-${Date.now().toString(36).toUpperCase()} | ${currentUser.email}`, W / 2, 850);
 
   // Download
   const link = document.createElement('a');
@@ -1244,7 +1815,7 @@ async function showAdminView() {
 
   // Show loading state while fetching from Firebase
   $('#admin-stats').innerHTML = '<div class="stat-card"><div class="stat-label">Loading results from database...</div></div>';
-  $('#admin-results-body').innerHTML = '<tr><td colspan="8" class="empty-state"><p>Loading...</p></td></tr>';
+  $('#admin-results-body').innerHTML = '<tr><td colspan="16" class="empty-state"><p>Loading...</p></td></tr>';
 
   await fetchAllUsersFromFirebase();
 
@@ -1377,7 +1948,7 @@ function renderAdminOverview() {
   // Table
   const tbody = $('#admin-results-body');
   if (userList.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" class="empty-state"><p>No participants yet.</p></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="16" class="empty-state"><p>No participants yet.</p></td></tr>`;
     return;
   }
 
