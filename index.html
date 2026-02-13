@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic AI in Power Platform – Assessment</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Login View -->
+        <div id="login-view" class="view active">
+            <div class="login-container">
+                <div class="login-brand">
+                    <div class="brand-icon">AI</div>
+                    <h1>Agentic AI in Power Platform</h1>
+                    <p class="subtitle">Knowledge Assessment</p>
+                </div>
+                <form id="login-form" class="login-form">
+                    <div class="form-group">
+                        <label for="login-name">Full Name</label>
+                        <input type="text" id="login-name" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter password" required>
+                    </div>
+                    <div id="login-error" class="error-msg hidden"></div>
+                    <button type="submit" class="btn btn-primary btn-full">Start Assessment</button>
+                    <div class="admin-link">
+                        <a href="#" id="admin-toggle">Admin Login</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="view">
+            <header class="app-header">
+                <div class="header-left">
+                    <div class="brand-icon-sm">AI</div>
+                    <span class="header-title">Power Platform Assessment</span>
+                </div>
+                <div class="header-right">
+                    <span id="user-greeting" class="user-greeting"></span>
+                    <button id="logout-btn" class="btn btn-outline btn-sm">Logout</button>
+                </div>
+            </header>
+            <main class="dashboard-main">
+                <div class="dashboard-header">
+                    <h2>Module Dashboard</h2>
+                    <p>Complete all 4 modules to earn your certificate. Each module contains 5 questions.</p>
+                    <div id="overall-progress" class="overall-progress"></div>
+                </div>
+                <div id="module-cards" class="module-cards"></div>
+                <div id="certificate-section" class="certificate-section hidden">
+                    <div class="certificate-banner">
+                        <div class="cert-icon">&#127941;</div>
+                        <div>
+                            <h3>Congratulations! All modules completed.</h3>
+                            <p id="final-score-text"></p>
+                        </div>
+                        <button id="download-cert-btn" class="btn btn-accent">Download Certificate</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Quiz View -->
+        <div id="quiz-view" class="view">
+            <header class="app-header">
+                <div class="header-left">
+                    <button id="quiz-back-btn" class="btn btn-ghost btn-sm">&larr; Back</button>
+                    <span id="quiz-module-title" class="header-title"></span>
+                </div>
+                <div class="header-right">
+                    <span id="quiz-progress" class="quiz-progress-text"></span>
+                </div>
+            </header>
+            <main class="quiz-main">
+                <div class="quiz-progress-bar">
+                    <div id="quiz-progress-fill" class="quiz-progress-fill"></div>
+                </div>
+                <div id="question-container" class="question-container"></div>
+                <div id="feedback-container" class="feedback-container hidden"></div>
+                <div class="quiz-actions">
+                    <button id="submit-answer-btn" class="btn btn-primary" disabled>Submit Answer</button>
+                    <button id="next-question-btn" class="btn btn-primary hidden">Next Question</button>
+                </div>
+            </main>
+        </div>
+
+        <!-- Module Result View -->
+        <div id="module-result-view" class="view">
+            <header class="app-header">
+                <div class="header-left">
+                    <div class="brand-icon-sm">AI</div>
+                    <span class="header-title">Module Complete</span>
+                </div>
+            </header>
+            <main class="result-main">
+                <div class="result-card">
+                    <div id="result-icon" class="result-icon"></div>
+                    <h2 id="result-module-name"></h2>
+                    <div id="result-score" class="result-score"></div>
+                    <p id="result-message" class="result-message"></p>
+                    <div id="result-breakdown" class="result-breakdown"></div>
+                    <button id="result-continue-btn" class="btn btn-primary">Back to Dashboard</button>
+                </div>
+            </main>
+        </div>
+
+        <!-- Admin View -->
+        <div id="admin-view" class="view">
+            <header class="app-header">
+                <div class="header-left">
+                    <div class="brand-icon-sm">AI</div>
+                    <span class="header-title">Admin Panel</span>
+                </div>
+                <div class="header-right">
+                    <button id="admin-logout-btn" class="btn btn-outline btn-sm">Logout</button>
+                </div>
+            </header>
+            <main class="admin-main">
+                <div class="admin-tabs">
+                    <button class="tab-btn active" data-tab="overview">Overview</button>
+                    <button class="tab-btn" data-tab="individual">Individual Results</button>
+                </div>
+
+                <!-- Overview Tab -->
+                <div id="tab-overview" class="tab-content active">
+                    <div class="admin-stats" id="admin-stats"></div>
+                    <div class="admin-section">
+                        <div class="section-header">
+                            <h3>All Participants</h3>
+                            <button id="download-all-csv" class="btn btn-accent btn-sm">Download CSV</button>
+                        </div>
+                        <div class="table-wrapper">
+                            <table id="admin-results-table" class="results-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Module 1</th>
+                                        <th>Module 2</th>
+                                        <th>Module 3</th>
+                                        <th>Module 4</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-results-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Individual Tab -->
+                <div id="tab-individual" class="tab-content">
+                    <div class="individual-selector">
+                        <label for="individual-select">Select Participant:</label>
+                        <select id="individual-select">
+                            <option value="">-- Select --</option>
+                        </select>
+                        <button id="download-individual-csv" class="btn btn-accent btn-sm" disabled>Download Report</button>
+                    </div>
+                    <div id="individual-detail" class="individual-detail"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Hidden canvas for certificate generation -->
+    <canvas id="cert-canvas" width="1200" height="850" style="display:none;"></canvas>
+
+    <script src="app.js"></script>
+</body>
+</html>
