@@ -351,6 +351,7 @@ function initLogin() {
     adminMode = false;
     adminToggle.textContent = 'Admin Login';
     $('#login-name').parentElement.style.display = 'block';
+    $('#login-name').required = true;
     submitBtn.textContent = 'Start Assessment';
   }
 
@@ -362,6 +363,7 @@ function initLogin() {
     adminMode = !adminMode;
     adminToggle.textContent = adminMode ? 'User Login' : 'Admin Login';
     $('#login-name').parentElement.style.display = adminMode ? 'none' : 'block';
+    $('#login-name').required = !adminMode;
     submitBtn.textContent = adminMode ? 'Admin Login' : 'Start Assessment';
     if (adminMode) {
       $('#login-email').value = ADMIN_EMAIL;
