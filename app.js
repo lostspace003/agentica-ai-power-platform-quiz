@@ -345,6 +345,21 @@ function firebaseKeyToEmail(key) {
   return key.replace(/,/g, '.').replace(/__at__/g, '@');
 }
 
+// Firebase converts objects with numeric keys (e.g. {1: ..., 2: ...}) to arrays.
+// This normalizes modules data back to a proper object after reading from Firebase.
+function normalizeUserData(data) {
+  if (!data) return data;
+  if (data.modules && Array.isArray(data.modules)) {
+    const modulesObj = {};
+    data.modules.forEach((val, idx) => {
+      if (val) modulesObj[idx] = val;
+    });
+    data.modules = modulesObj;
+  }
+  if (!data.modules) data.modules = {};
+  return data;
+}
+
 // ========================================
 // State
 // ========================================
@@ -397,22 +412,31 @@ function saveUserData(email, data) {
   }
 }
 
+// Track last Firebase error for admin display
+let lastFirebaseError = null;
+
 // Fetch all users from Firebase (used by admin view)
 async function fetchAllUsersFromFirebase() {
-  if (!firebaseEnabled || !firebaseDB) return getUsers();
+  if (!firebaseEnabled || !firebaseDB) {
+    lastFirebaseError = 'Firebase is not connected. Results are local to this browser only.';
+    return getUsers();
+  }
   try {
     const snapshot = await firebaseDB.ref('users').once('value');
     const raw = snapshot.val() || {};
     const users = {};
     Object.keys(raw).forEach(key => {
       const email = firebaseKeyToEmail(key);
-      users[email] = raw[key];
+      users[email] = normalizeUserData(raw[key]);
     });
     // Cache in localStorage so CSV export and other sync reads work
     saveUsers(users);
+    lastFirebaseError = null;
     return users;
   } catch (err) {
     console.warn('[Quiz] Firebase fetch failed, using localStorage:', err);
+    lastFirebaseError = 'Firebase fetch failed: ' + (err.message || err.code || 'Unknown error') +
+      '. Check that database rules allow reads. Admin is showing local data only.';
     return getUsers();
   }
 }
@@ -423,7 +447,7 @@ async function fetchUserFromFirebase(email) {
   try {
     const key = emailToFirebaseKey(email);
     const snapshot = await firebaseDB.ref('users/' + key).once('value');
-    const data = snapshot.val();
+    const data = normalizeUserData(snapshot.val());
     if (data) {
       // Update localStorage cache
       const users = getUsers();
@@ -1213,18 +1237,84 @@ function generateCertificate() {
 // ========================================
 // Admin Panel
 // ========================================
+let adminFirebaseListener = null;
+
 async function showAdminView() {
   showView('admin-view');
 
   // Show loading state while fetching from Firebase
-  if (firebaseEnabled) {
-    $('#admin-stats').innerHTML = '<div class="stat-card"><div class="stat-label">Loading results from database...</div></div>';
-    $('#admin-results-body').innerHTML = '<tr><td colspan="8" class="empty-state"><p>Loading...</p></td></tr>';
-    await fetchAllUsersFromFirebase();
-  }
+  $('#admin-stats').innerHTML = '<div class="stat-card"><div class="stat-label">Loading results from database...</div></div>';
+  $('#admin-results-body').innerHTML = '<tr><td colspan="8" class="empty-state"><p>Loading...</p></td></tr>';
+
+  await fetchAllUsersFromFirebase();
 
   renderAdminOverview();
   renderAdminTabs();
+  renderFirebaseStatus();
+
+  // Set up real-time listener so admin sees new results as they come in
+  setupAdminRealTimeListener();
+}
+
+function renderFirebaseStatus() {
+  let statusEl = $('#firebase-status');
+  if (!statusEl) return;
+
+  if (!firebaseEnabled) {
+    statusEl.innerHTML = '<span class="fb-status fb-status-off">&#9888; Offline mode — showing local data only</span>';
+  } else if (lastFirebaseError) {
+    statusEl.innerHTML = `<span class="fb-status fb-status-error">&#9888; ${lastFirebaseError}</span>`;
+  } else {
+    statusEl.innerHTML = '<span class="fb-status fb-status-ok">&#10003; Connected to database (live)</span>';
+  }
+}
+
+function setupAdminRealTimeListener() {
+  // Remove existing listener if any
+  teardownAdminRealTimeListener();
+
+  if (!firebaseEnabled || !firebaseDB) return;
+
+  adminFirebaseListener = firebaseDB.ref('users');
+  adminFirebaseListener.on('value', (snapshot) => {
+    const raw = snapshot.val() || {};
+    const users = {};
+    Object.keys(raw).forEach(key => {
+      const email = firebaseKeyToEmail(key);
+      users[email] = normalizeUserData(raw[key]);
+    });
+    saveUsers(users);
+    // Re-render admin view with fresh data
+    renderAdminOverview();
+    renderFirebaseStatus();
+  }, (err) => {
+    console.warn('[Quiz] Firebase real-time listener error:', err);
+    lastFirebaseError = 'Real-time sync failed: ' + (err.message || err.code || 'Unknown error') +
+      '. Check database rules allow reads.';
+    renderFirebaseStatus();
+  });
+}
+
+function teardownAdminRealTimeListener() {
+  if (adminFirebaseListener) {
+    adminFirebaseListener.off();
+    adminFirebaseListener = null;
+  }
+}
+
+async function refreshAdminData() {
+  const btn = $('#admin-refresh-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Refreshing...';
+  }
+  await fetchAllUsersFromFirebase();
+  renderAdminOverview();
+  renderFirebaseStatus();
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = 'Refresh';
+  }
 }
 
 function renderAdminTabs() {
@@ -1506,6 +1596,7 @@ function init() {
 
   // Logout
   $('#logout-btn').addEventListener('click', () => {
+    teardownAdminRealTimeListener();
     currentUser = null;
     isAdmin = false;
     $('#login-form').reset();
@@ -1514,12 +1605,16 @@ function init() {
   });
 
   $('#admin-logout-btn').addEventListener('click', () => {
+    teardownAdminRealTimeListener();
     currentUser = null;
     isAdmin = false;
     $('#login-form').reset();
     if (window._resetAdminMode) window._resetAdminMode();
     showView('login-view');
   });
+
+  // Admin refresh button
+  $('#admin-refresh-btn').addEventListener('click', refreshAdminData);
 
   // Quiz back button
   $('#quiz-back-btn').addEventListener('click', () => {
